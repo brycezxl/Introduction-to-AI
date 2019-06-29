@@ -82,7 +82,7 @@ net = AlexNet()
 criterion = nn.CrossEntropyLoss()
 
 # 优化器 这里用SGD
-optimizer = optim.SGD(net.parameters(), lr=1e-4, momentum=0.9)
+optimizer = optim.SGD(net.parameters(), lr=1e-3, momentum=0.9)
 
 # device : GPU or CPU
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -105,7 +105,7 @@ for epoch in range(num_epochs):
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        pbar.update(1 / len(trainloader))
+        pbar.update(int(1 / len(trainloader)) * 100)
     pbar.close()
 
     print('Epoch: %2d | Loss: %.4f' % (epoch+1, loss.item()))
