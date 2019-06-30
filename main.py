@@ -10,7 +10,7 @@ import torchvision.transforms as transforms
 from tqdm import tqdm
 
 
-def train(transform_train, model, epoches=15, lr=1e-3):
+def train(transform_train, model, epoches=20, lr=1e-3):
     print(">>>>>>>>>>>>>> %s start >>>>>>>>>>>>>>" % model().name)
     # 图像预处理 带有翻转等数据扩增
     # transform
