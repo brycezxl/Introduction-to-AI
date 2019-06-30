@@ -1,21 +1,17 @@
-import AlexNet
-from AlexNet import train as Alex_train
+from AlexNet import AlexNet
 from Mix import Mix
-from Mix import train as Mix_train
 from FC import FC
-from FC import train as FC_train
 from CNN import CNN
-from CNN import train as CNN_train
 import torch
 import torchvision
 import torch.nn as nn
 import torch.optim as optim
 import torchvision.transforms as transforms
-import torch.nn.functional as F
 from tqdm import tqdm
 
 
-def train(transform_train, model, epoches=20):
+def train(transform_train, model, epoches=15, lr=1e-3):
+    print(">>>>>>>>>>>>>> %s start >>>>>>>>>>>>>>" % model().name)
     # 图像预处理 带有翻转等数据扩增
     # transform
 
@@ -36,7 +32,7 @@ def train(transform_train, model, epoches=20):
     # 损失函数:这里用交叉熵
     criterion = nn.CrossEntropyLoss()
     # 优化器 这里用SGD 随机梯度下降
-    optimizer = optim.Adam(net.parameters())
+    optimizer = optim.Adam(net.parameters(), lr=lr)
 
     # 开始训练
     best_acc = 0
@@ -90,7 +86,8 @@ def train(transform_train, model, epoches=20):
                                                   ("Yes" if (testing_correct / test_num > best_acc) else "No")))
         if (testing_correct / test_num) > best_acc:
             best_acc = testing_correct / test_num
-            torch.save(net, 'model/Alex.pkl')
+            torch.save(net, 'model/%s.pkl' % net.name)
+    print(">>>>>>>>>>>>>> %s done  >>>>>>>>>>>>>>" % model().name)
 
 
 if __name__ == '__main__':
@@ -98,4 +95,7 @@ if __name__ == '__main__':
         transforms.RandomGrayscale(),
         transforms.ToTensor(),
     ])
+    train(transform, FC)
+    train(transform, CNN)
     train(transform, AlexNet)
+    train(transform, Mix)
