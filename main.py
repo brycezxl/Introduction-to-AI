@@ -7,7 +7,6 @@ import torchvision
 import torch.nn as nn
 import torch.optim as optim
 import torchvision.transforms as transforms
-from tqdm import tqdm
 
 
 def train(transform_train, model, epoches=30, lr=1e-3):
@@ -44,7 +43,7 @@ def train(transform_train, model, epoches=30, lr=1e-3):
         testing_correct = 0
         test_num = 0
 
-        for i, data in tqdm(enumerate(trainloader), total=len(trainloader)):
+        for i, data in enumerate(trainloader):
             # 分批次取出数据
             inputs, labels = data
             inputs, labels = inputs.to(device), labels.to(device)
