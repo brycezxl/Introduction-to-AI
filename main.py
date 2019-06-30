@@ -147,7 +147,7 @@ if __name__ == '__main__':
         plt.plot(range(1, (len(AlexNet_running_correct_list) + 1)), AlexNet_running_correct_list)
         plt.plot(range(1, (len(Mix_running_correct_list) + 1)), Mix_running_correct_list)
         plt.savefig(r"./running_correct%d.png" % i)
-	plt.show()
+        plt.show()
 
         plt.figure(num=3)
         plt.plot(range(1, (len(FC_testing_correct_list) + 1)), FC_testing_correct_list)
@@ -156,4 +156,3 @@ if __name__ == '__main__':
         plt.plot(range(1, (len(Mix_testing_correct_list) + 1)), Mix_testing_correct_list)
         plt.savefig(r"./testing_correct%d.png" % i)
         plt.show()
-
