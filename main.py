@@ -7,9 +7,10 @@ import torchvision
 import torch.nn as nn
 import torch.optim as optim
 import torchvision.transforms as transforms
+import matplotlib.pyplot as plt
 
 
-def train(transform_train, model, epoches=30, lr=1e-3):
+def train(transform_train, model, epoches=1, lr=1e-3):
     print(">>>>>>>>>>>>>> %s start >>>>>>>>>>>>>>" % model().name)
     # 图像预处理 带有翻转等数据扩增
     # transform
@@ -35,6 +36,10 @@ def train(transform_train, model, epoches=30, lr=1e-3):
 
     # 开始训练
     best_acc = 0
+    loss_list = []
+    running_correct_list = []
+    testing_correct_list = []
+
     for epoch in range(epoches):
 
         running_loss = 0
@@ -78,6 +83,9 @@ def train(transform_train, model, epoches=30, lr=1e-3):
                 testing_correct += (predicted == labels).sum().item()
                 test_num += len(labels)
 
+        loss_list.append(running_loss / len(trainloader))
+        running_correct_list.append((running_correct / running_num * 100))
+        testing_correct_list.append(testing_correct / test_num * 100)
         print('Epoch: %2d / %2d | Loss: %.4f | Train Acc: %2.2f%% '
               '| Test Acc: %2.2f%% | Best: %s' % (epoch + 1, epoches, running_loss / len(trainloader),
                                                   (running_correct / running_num * 100),
@@ -86,15 +94,66 @@ def train(transform_train, model, epoches=30, lr=1e-3):
         if (testing_correct / test_num) > best_acc:
             best_acc = testing_correct / test_num
             torch.save(net, 'model/%s.pkl' % net.name)
+
     print(">>>>>>>>>>>>>> %s done  >>>>>>>>>>>>>>" % model().name)
+    return loss_list, running_correct_list, testing_correct_list
 
 
 if __name__ == '__main__':
-    transform = transforms.Compose([
+
+    transform1 = transforms.Compose([
+        transforms.ToTensor(),
+    ])
+    transform2 = transforms.Compose([
         transforms.RandomGrayscale(),
         transforms.ToTensor(),
     ])
-    train(transform, FC)
-    train(transform, CNN)
-    train(transform, AlexNet)
-    train(transform, Mix)
+    transform3 = transforms.Compose([
+        transforms.RandomResizedCrop(size=(28, 28)),
+        transforms.ToTensor(),
+    ])
+    transform4 = transforms.Compose([
+        transforms.RandomAffine(degrees=15),
+        transforms.ToTensor(),
+    ])
+    transform5 = transforms.Compose([
+        transforms.RandomPerspective(),
+        transforms.ToTensor(),
+    ])
+    transform6 = transforms.Compose([
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.5], std=[0.5])
+    ])
+    transform_list = [transform1, transform2, transform3, transform4, transform5, transform6]
+
+    for i, transform in enumerate(transform_list):
+        print("\r -----%d----- \r" % (i + 1))
+        FC_loss_list, FC_running_correct_list, FC_testing_correct_list = train(transform, FC)
+        CNN_loss_list, CNN_running_correct_list, CNN_testing_correct_list = train(transform, CNN)
+        AlexNet_loss_list, AlexNet_running_correct_list, AlexNet_testing_correct_list = train(transform, AlexNet)
+        Mix_loss_list, Mix_running_correct_list, Mix_testing_correct_list = train(transform, Mix)
+
+        plt.figure(num=1)
+        plt.plot(range(1, (len(FC_loss_list) + 1)), FC_loss_list)
+        plt.plot(range(1, (len(CNN_loss_list) + 1)), CNN_loss_list)
+        plt.plot(range(1, (len(AlexNet_loss_list) + 1)), AlexNet_loss_list)
+        plt.plot(range(1, (len(Mix_loss_list) + 1)), Mix_loss_list)
+        plt.savefig(r"./loss%d.png" % i)
+        plt.show()
+
+        plt.figure(num=2)
+        plt.plot(range(1, (len(FC_running_correct_list) + 1)), FC_running_correct_list)
+        plt.plot(range(1, (len(CNN_running_correct_list) + 1)), CNN_running_correct_list)
+        plt.plot(range(1, (len(AlexNet_running_correct_list) + 1)), AlexNet_running_correct_list)
+        plt.plot(range(1, (len(Mix_running_correct_list) + 1)), Mix_running_correct_list)
+        plt.savefig(r"./running_correct%d.png" % i)
+	plt.show()
+
+        plt.figure(num=3)
+        plt.plot(range(1, (len(FC_testing_correct_list) + 1)), FC_testing_correct_list)
+        plt.plot(range(1, (len(CNN_testing_correct_list) + 1)), CNN_testing_correct_list)
+        plt.plot(range(1, (len(AlexNet_testing_correct_list) + 1)), AlexNet_testing_correct_list)
+        plt.plot(range(1, (len(Mix_testing_correct_list) + 1)), Mix_testing_correct_list)
+        plt.savefig(r"./testing_correct%d.png" % i)
+        plt.show()
+
