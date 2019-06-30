@@ -10,7 +10,11 @@ import torchvision.transforms as transforms
 import matplotlib.pyplot as plt
 
 
-def train(transform_train, model, epoches=1, lr=1e-3):
+torch.manual_seed(1337)
+torch.cuda.manual_seed(1337)
+
+
+def train(transform_train, model, epoches=25, lr=1e-3):
     print(">>>>>>>>>>>>>> %s start >>>>>>>>>>>>>>" % model().name)
     # 图像预处理 带有翻转等数据扩增
     # transform
@@ -21,9 +25,9 @@ def train(transform_train, model, epoches=1, lr=1e-3):
 
     # 直接加载pytorch已有的mnist数据集
     trainset = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=transform_train)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=128, shuffle=True, num_workers=2)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=128, shuffle=True, num_workers=4)
     testset = torchvision.datasets.MNIST(root='./data', train=False, download=True, transform=transform0)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=128, shuffle=False, num_workers=2)
+    testloader = torch.utils.data.DataLoader(testset, batch_size=128, shuffle=False, num_workers=4)
 
     # device : GPU or CPU
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -120,11 +124,8 @@ if __name__ == '__main__':
         transforms.RandomPerspective(),
         transforms.ToTensor(),
     ])
-    transform6 = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5], std=[0.5])
-    ])
-    transform_list = [transform1, transform2, transform3, transform4, transform5, transform6]
+
+    transform_list = [transform1, transform2, transform3, transform4, transform5]
 
     for i, transform in enumerate(transform_list):
         print("\r -----%d----- \r" % (i + 1))
