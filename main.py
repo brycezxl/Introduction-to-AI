@@ -14,7 +14,7 @@ torch.manual_seed(1337)
 torch.cuda.manual_seed(1337)
 
 
-def train(transform_train, model, epoches=25, lr=1e-3):
+def train(transform_train, model, epoches=40, lr=1e-2):
     print(">>>>>>>>>>>>>> %s start >>>>>>>>>>>>>>" % model().name)
     # 图像预处理 带有翻转等数据扩增
     # transform
@@ -25,9 +25,9 @@ def train(transform_train, model, epoches=25, lr=1e-3):
 
     # 直接加载pytorch已有的mnist数据集
     trainset = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=transform_train)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=128, shuffle=True, num_workers=4)
+    trainloader = torch.utils.data.DataLoader(trainset, batch_size=128, shuffle=True, num_workers=2)
     testset = torchvision.datasets.MNIST(root='./data', train=False, download=True, transform=transform0)
-    testloader = torch.utils.data.DataLoader(testset, batch_size=128, shuffle=False, num_workers=4)
+    testloader = torch.utils.data.DataLoader(testset, batch_size=128, shuffle=False, num_workers=2)
 
     # device : GPU or CPU
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -125,17 +125,21 @@ if __name__ == '__main__':
         transforms.ToTensor(),
     ])
     transform6 = transforms.Compose([
-        transforms.RandomPerspective(),
-        transforms.RandomAffine(degrees=15),
-        transforms.RandomResizedCrop(size=(28, 28)),
-        transforms.RandomGrayscale(),
+        transforms.RandomApply([transforms.RandomPerspective(),
+            transforms.RandomAffine(degrees=15),
+            transforms.RandomResizedCrop(size=(28, 28)),
+            transforms.RandomGrayscale()]),
         transforms.ToTensor(),
     ])
 
-    transform_list = [transform6, transform2, transform3, transform4, transform5]
+    transform_list = [transform1, transform2, transform3, transform4, transform5]
 
     for i, transform in enumerate(transform_list):
         print("\r -----%d----- \r" % (i + 1))
+        print(FC())
+        print(CNN())
+        print(AlexNet())
+        print(Mix())
         FC_loss_list, FC_running_correct_list, FC_testing_correct_list = train(transform, FC)
         CNN_loss_list, CNN_running_correct_list, CNN_testing_correct_list = train(transform, CNN)
         AlexNet_loss_list, AlexNet_running_correct_list, AlexNet_testing_correct_list = train(transform, AlexNet)
