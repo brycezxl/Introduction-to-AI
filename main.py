@@ -124,8 +124,15 @@ if __name__ == '__main__':
         transforms.RandomPerspective(),
         transforms.ToTensor(),
     ])
+    transform6 = transforms.Compose([
+        transforms.RandomPerspective(),
+        transforms.RandomAffine(degrees=15),
+        transforms.RandomResizedCrop(size=(28, 28)),
+        transforms.RandomGrayscale(),
+        transforms.ToTensor(),
+    ])
 
-    transform_list = [transform1, transform2, transform3, transform4, transform5]
+    transform_list = [transform6, transform2, transform3, transform4, transform5]
 
     for i, transform in enumerate(transform_list):
         print("\r -----%d----- \r" % (i + 1))
@@ -139,7 +146,7 @@ if __name__ == '__main__':
         plt.plot(range(1, (len(CNN_loss_list) + 1)), CNN_loss_list)
         plt.plot(range(1, (len(AlexNet_loss_list) + 1)), AlexNet_loss_list)
         plt.plot(range(1, (len(Mix_loss_list) + 1)), Mix_loss_list)
-        plt.savefig(r"./loss%d.png" % i)
+        plt.savefig(r"pictures/loss%d.png" % 6)
         plt.show()
 
         plt.figure(num=2)
@@ -147,7 +154,7 @@ if __name__ == '__main__':
         plt.plot(range(1, (len(CNN_running_correct_list) + 1)), CNN_running_correct_list)
         plt.plot(range(1, (len(AlexNet_running_correct_list) + 1)), AlexNet_running_correct_list)
         plt.plot(range(1, (len(Mix_running_correct_list) + 1)), Mix_running_correct_list)
-        plt.savefig(r"./running_correct%d.png" % i)
+        plt.savefig(r"pictures/running_correct%d.png" % 6)
         plt.show()
 
         plt.figure(num=3)
@@ -155,5 +162,5 @@ if __name__ == '__main__':
         plt.plot(range(1, (len(CNN_testing_correct_list) + 1)), CNN_testing_correct_list)
         plt.plot(range(1, (len(AlexNet_testing_correct_list) + 1)), AlexNet_testing_correct_list)
         plt.plot(range(1, (len(Mix_testing_correct_list) + 1)), Mix_testing_correct_list)
-        plt.savefig(r"./testing_correct%d.png" % i)
+        plt.savefig(r"pictures/testing_correct%d.png" % 6)
         plt.show()
